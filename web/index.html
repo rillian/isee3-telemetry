@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>ISEE-3 Reboot!</title>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+function start() {
+  // Log data as it comes in.
+  var elements = {};
+  var socket = io();
+  socket.on('data', function(data) {
+    var result = data.result;
+    var id = data.result.id;
+    // Convert timestamp to ISO 8601 and parse.
+    var time = Date.parse(result.time.replace(' ', 'T'));
+    // Make new elements for new variables.
+    if (! (id in elements)) {
+      Object.defineProperty(elements, id, {value: result, enumerable: true});
+      elements[id].data = [];
+      var ul = document.getElementById('data');
+      var li = document.createElement('li');
+      li.id = id;
+      ul.appendChild(li);
+    }
+    // Update table.
+    var text = id;
+    text += ' ' + result.value;
+    text += ' ' + result.time;
+    document.getElementById(id).textContent = text;
+  });
+}
+addEventListener('load', start);
+</script>
+
+</head>
+<body>
+<h1>ISEE-3 Telemetry</h1>
+  <ul id=data></ul>
+  <div id=footer>
+    <p>Source available on <a href="https://github.com/rillian/isee3-telemetry/tree/dev">github</a>.</p>
+  </div>
+</body>
+</html>
