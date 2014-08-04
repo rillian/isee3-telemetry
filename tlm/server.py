@@ -313,6 +313,7 @@ class Server():
 						self.log("%s: Listing: %s" % (client_address, ", ".join(successful_elements)))
 					else:
 						response['error'] = "Action unrecognised: '%s'" % (msg['action'])
+						self.log("%s: Invalid action: %s" % (client_address, msg['action']))
 				except Exception, e:
 					print "While Server was handling message:", e
 					response['error'] = str(e)
