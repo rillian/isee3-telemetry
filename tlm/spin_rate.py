@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# vim: noet ci pi sts=0 sw=4 ts=4 :
 #
 #  spin_rate.py
 #  
