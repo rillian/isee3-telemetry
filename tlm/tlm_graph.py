@@ -230,6 +230,7 @@ class Network(threading.Thread):
 		if new_line:
 			msg += '\n'
 		self.sock.send(msg)
+		print("-> %s\n" % msg)
 	def transact(self, msg):
 		if not self.keep_running:
 			print "Cannot start transaction when not running"
@@ -290,6 +291,7 @@ class Network(threading.Thread):
 				try:
 					try:
 						msg = jsonpickle.decode(line)
+						print("<- %s\n" % line)
 					except Exception, e:
 						raise Exception("Could not decode JSON:\n%s" % (line))
 					

@@ -224,12 +224,12 @@ class Server():
 				
 				try:
 					action				= msg['action'].lower()
-					data				= msg['data']
 					
 					response['action']	= action
 					response['seq']		= msg['seq']
 					
 					if action == "register":
+						data = msg['data']
 						for element_id in data:
 							element_state = self.element_state_manager.get_element_state(element_id, safe=False)
 							if element_state is None:
@@ -261,6 +261,7 @@ class Server():
 							
 							self.log("%s: Registered: %s" % (client_address, ", ".join([x['id'] for x in successful_elements])))
 					elif action == "unregister":
+						data = msg['data']
 						self.log("%s: Unregistering: %s" % (client_address, ", ".join(map(str, data))))
 						
 						registered_element_states = self._get_client_element_states(client)
@@ -307,6 +308,9 @@ class Server():
 						untracked_elements = self._untrack(element_states, client)
 						
 						self.log("%s: Unregistered: %s" % (client_address, ", ".join([x.get_element().id() for x in untracked_elements])))
+					elif action == "list":
+						successful_elements += self.element_state_manager.element_state_map.keys()
+						self.log("%s: Listing: %s" % (client_address, ", ".join(successful_elements)))
 					else:
 						res['error'] = "Action unrecognised: '%s'" % (msg['action'])
 				except Exception, e:
