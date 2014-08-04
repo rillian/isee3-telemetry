@@ -312,10 +312,10 @@ class Server():
 						successful_elements += self.element_state_manager.element_state_map.keys()
 						self.log("%s: Listing: %s" % (client_address, ", ".join(successful_elements)))
 					else:
-						res['error'] = "Action unrecognised: '%s'" % (msg['action'])
+						response['error'] = "Action unrecognised: '%s'" % (msg['action'])
 				except Exception, e:
 					print "While Server was handling message:", e
-					res['error'] = str(e)
+					response['error'] = str(e)
 					raise
 				
 				client.post(response)
