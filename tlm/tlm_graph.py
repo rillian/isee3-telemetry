@@ -36,7 +36,6 @@ from optparse import OptionParser
 import numpy
 import matplotlib
 import matplotlib.pyplot as pyplot
-import wx	# For catching when GUI is closed (when using WX MPL backend)
 
 import realtime_graph
 
@@ -529,8 +528,6 @@ def main():
 			if update_cnt > 0:
 				graph_window.redraw()
 	except KeyboardInterrupt:
-		pass
-	except wx._core.PyDeadObjectError:
 		pass
 	except Exception, e:
 		print "Unhandled exception:", e
