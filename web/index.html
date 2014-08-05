@@ -7,16 +7,20 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 function start() {
+  var elements = {};
   var socket = io();
   socket.on('data', function(data) {
-    console.log(data);
-    var ul = document.getElementById('data');
-    var li = document.createElement('li');
+    if (! (data.result.id in elements)) {
+      Object.defineProperty(elements, data.result.id, data.result);
+      var ul = document.getElementById('data');
+      var li = document.createElement('li');
+      li.id = data.result.id;
+      ul.appendChild(li);
+    }
     var text = data.result.id;
     text += ' ' + data.result.value;
     text += ' ' + data.result.time;
-    li.textContent = text;
-    ul.appendChild(li);
+    document.getElementById(data.result.id).textContent = text;
   });
 }
 addEventListener('load', start);
