@@ -21,6 +21,11 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+// Serve our pages.
+app.get('/', function(req, res) {
+  res.sendfile('index.html');
+});
+
 io.on('connection', function(socket){
   console.log('socket.io connect', socket.handshake.address);
   socket.on('disconnect', function(){
@@ -28,6 +33,7 @@ io.on('connection', function(socket){
   });
 });
 
+// Repeat available data.
 var net = require('net');
 var query = {
   list: {
@@ -41,28 +47,18 @@ var query = {
   },
 }
 
-app.get('/', function(req, res) {
-  res.sendfile('index.html');
+var client = net.connect({port: 21012}, function() {
+  // On connect.
+  console.log('client connected');
+  client.write(JSON.stringify(query.register) + '\n');
+});
+client.on('data', function(data) {
+  io.emit('data', JSON.parse(data));
+});
+client.on('end', function() {
+  console.log('client disconnected');
 });
 
-app.get('/list', function(req, res) {
-  var client = net.connect({port: 21012}, function() {
-    // On connect.
-    console.log('client connected');
-    client.write(JSON.stringify(query.list) + '\n');
-  });
-  client.on('data', function(data) {
-    parse = JSON.parse(data);
-    res.send({
-      result: parse.result[0],
-      error: parse.error,
-    });
-    client.end();
-  });
-  client.on('end', function() {
-    console.log('client disconnected');
-  });
-});
 
 // Instantiate server.
 var server = http.listen(3000, function() {

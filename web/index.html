@@ -6,13 +6,26 @@
 <link rel=stylesheet type=text/css href=envision.min.css>
 <script src="/socket.io/socket.io.js"></script>
 <script>
+function start() {
   var socket = io();
+  socket.on('data', function(data) {
+    console.log(data);
+    var ul = document.getElementById('data');
+    var li = document.createElement('li');
+    var text = data.result.id;
+    text += ' ' + data.result.value;
+    text += ' ' + data.result.time;
+    li.textContent = text;
+    ul.appendChild(li);
+  });
+}
+addEventListener('load', start);
 </script>
 </head>
 <body>
 <h1>ISEE-3 Telemetry</h1>
   <div id=plot></div>
   <script src=envision.min.js></script>
-  <div id=data></div>
+  <ul id=data></ul>
 </body>
 </html>
