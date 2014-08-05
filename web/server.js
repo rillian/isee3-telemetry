@@ -17,9 +17,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 // MA 02110-1301, USA.
 
-var express = require('express');
-var app = express();
+var app = require('express')();
 var http = require('http').Server(app);
+var io = require('socket.io')(http);
+
+io.on('connection', function(socket){
+  console.log('socket.io connect', socket.handshake.address);
+  socket.on('disconnect', function(){
+    console.log('socket.io disconnect');
+  });
+});
 
 var net = require('net');
 var query = {
@@ -35,11 +42,10 @@ var query = {
 }
 
 app.get('/', function(req, res) {
-  res.send('ISEE-3 Reboot!');
+  res.sendfile('index.html');
 });
 
 app.get('/list', function(req, res) {
-  var list = [];
   var client = net.connect({port: 21012}, function() {
     // On connect.
     console.log('client connected');
