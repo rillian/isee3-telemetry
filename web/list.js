@@ -1,9 +1,15 @@
 var net = require('net');
 
+var query = {
+  action: 'list',
+  seq: 0,
+};
+
 var client = net.connect({port: 21012}, function() {
   // On connect.
   console.log('client connected');
-  client.write('{"action": "list", "seq": 0}\n');
+  // Commands are newline-terminated json.
+  client.write(JSON.stringify(query) + '\n');
 });
 client.on('data', function(data) {
   result = JSON.parse(data);
