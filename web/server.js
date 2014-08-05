@@ -20,10 +20,44 @@
 var express = require('express');
 var app = express();
 
-app.get('/', function(req, res){
+var net = require('net');
+var query = {
+  list: {
+    action: 'list',
+    seq: 0,
+  },
+  register: {
+    action: 'register',
+    data: [ 'hps_1_tc', 'hps_2_tc' ],
+    seq: 1,
+  },
+}
+
+app.get('/', function(req, res) {
   res.send('ISEE-3 Reboot!');
 });
 
+app.get('/list', function(req, res) {
+  var list = [];
+  var client = net.connect({port: 21012}, function() {
+    // On connect.
+    console.log('client connected');
+    client.write(JSON.stringify(query.list) + '\n');
+  });
+  client.on('data', function(data) {
+    parse = JSON.parse(data);
+    res.send({
+      result: parse.result[0],
+      error: parse.error,
+    });
+    client.end();
+  });
+  client.on('end', function() {
+    console.log('client disconnected');
+  });
+});
+
+// Instantiate server.
 var server = app.listen(3000, function() {
     console.log('Listening on port %d', server.address().port);
 });
