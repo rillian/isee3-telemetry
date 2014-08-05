@@ -19,6 +19,7 @@
 
 var express = require('express');
 var app = express();
+var http = require('http').Server(app);
 
 var net = require('net');
 var query = {
@@ -58,7 +59,7 @@ app.get('/list', function(req, res) {
 });
 
 // Instantiate server.
-var server = app.listen(3000, function() {
+var server = http.listen(3000, function() {
     console.log('Listening on port %d', server.address().port);
 });
 
