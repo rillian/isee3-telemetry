@@ -63,7 +63,12 @@ var client = net.connect({port: 21012}, function() {
   client.write(JSON.stringify(query.register) + '\n');
 });
 client.on('data', function(data) {
-  io.emit('data', JSON.parse(data));
+  try {
+    io.emit('data', JSON.parse(data));
+  }
+  catch (e) {
+    console.log('Failed to forward json from server:\n', data.toString(), e);
+  }
 });
 client.on('end', function() {
   console.log('client disconnected');
