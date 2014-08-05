@@ -42,7 +42,17 @@ var query = {
   },
   register: {
     action: 'register',
-    data: [ 'hps_1_tc', 'hps_2_tc' ],
+    data: [
+      'hps_1_tc',
+      'hps_2_tc',
+      'accelerometer',
+      'spin_rate',
+      'spin_angle',
+      'spacecraft_clock',
+      'frame_counter',
+      '28v_bus',
+      'sa_current',
+    ],
     seq: 1,
   },
 }
