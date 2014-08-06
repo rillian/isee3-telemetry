@@ -25,6 +25,12 @@ var io = require('socket.io')(http);
 app.get('/', function(req, res) {
   res.sendfile('index.html');
 });
+app.get('/envision.min.js', function(req, res) {
+  res.sendfile('envision.min.js');
+});
+app.get('/envision.min.css', function(req, res) {
+  res.sendfile('envision.min.css');
+});
 
 io.on('connection', function(socket){
   console.log('socket.io connect', socket.handshake.address);
