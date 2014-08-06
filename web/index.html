@@ -7,20 +7,49 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 function start() {
+  // Initialize plot;
+  var series = [];
+  var plot;
+  function initialize_plot() {
+    new envision.templates.TimeSeries({
+      container: document.getElementById('plot'),
+      data: {
+        detail: series,
+        summary: series
+      }
+    });
+  }
+
+  // Log data as it comes in.
   var elements = {};
   var socket = io();
   socket.on('data', function(data) {
-    if (! (data.result.id in elements)) {
-      Object.defineProperty(elements, data.result.id, data.result);
+    var result = data.result;
+    var id = data.result.id;
+    if (! (id in elements)) {
+      Object.defineProperty(elements, id, {value: result, enumerable: true});
+      elements[id].times = [];
+      elements[id].values = [];
+      if (id == 'sa_current') {
+        series.push([elements[id].times, elements[id].values]);
+        plot = initialize_plot();
+      }
       var ul = document.getElementById('data');
       var li = document.createElement('li');
-      li.id = data.result.id;
+      li.id = id;
       ul.appendChild(li);
     }
-    var text = data.result.id;
-    text += ' ' + data.result.value;
-    text += ' ' + data.result.time;
-    document.getElementById(data.result.id).textContent = text;
+    // Convert timestamp to ISO 8601 and parse.
+    var time = Date.parse(result.time.replace(' ', 'T'));
+    elements[id].times.push(time);
+    elements[id].values.push(result.value);
+    var text = id;
+    text += ' ' + result.value;
+    text += ' ' + result.time;
+    document.getElementById(id).textContent = text;
+    if (plot) {
+      plot.render();
+    }
   });
 }
 addEventListener('load', start);
