@@ -70,7 +70,12 @@ var client = net.connect({port: 21012}, function() {
 });
 client.on('data', function(data) {
   try {
-    io.emit('data', JSON.parse(data));
+    // The server sends a json representation of each data point.
+    // Unfortunately we sometimes receive multiple objects in a
+    // single buffer. Assume we can split them at newlines.
+    data.toString().split('\n').forEach(function(stanza) {
+      stanza.length && io.emit('data', JSON.parse(stanza));
+    });
   }
   catch (e) {
     console.log('Failed to forward json from server:\n', data.toString(), e);
