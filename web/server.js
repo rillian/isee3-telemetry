@@ -26,6 +26,19 @@ app.get('/', function(req, res) {
   res.sendfile('index.html');
 });
 
+app.get('/rickshaw.min.js', function(req, res) {
+  res.sendfile('node_modules/rickshaw/rickshaw.min.js');
+});
+app.get('/rickshaw.min.css', function(req, res) {
+  res.sendfile('node_modules/rickshaw/rickshaw.min.css');
+});
+app.get('/d3.min.js', function(req, res) {
+  res.sendfile('node_modules/rickshaw/vendor/d3.min.js');
+});
+app.get('/d3.layout.min.js', function(req, res) {
+  res.sendfile('node_modules/rickshaw/vendor/d3.layout.min.js');
+});
+
 io.on('connection', function(socket){
   console.log('socket.io connect', socket.handshake.address);
   socket.on('disconnect', function(){

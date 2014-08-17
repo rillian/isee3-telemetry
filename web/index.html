@@ -4,6 +4,10 @@
 <meta charset=utf-8>
 <title>ISEE-3 Reboot!</title>
 <script src="/socket.io/socket.io.js"></script>
+<script src="d3.min.js"></script>
+<script src="d3.layout.min.js"></script>
+<script src="rickshaw.min.js"></script>
+
 <script>
 function start() {
   // Log data as it comes in.
@@ -16,35 +20,47 @@ function start() {
     'hps_2_temp_supercom',
   ];
   var maxpoints = 100;
+  var graph;
+  function make_graph() {
+    graph = new Rickshaw.Graph( {
+      element: document.querySelector('#plot'),
+      series: elements['hps_1_tc'].data
+    });
+  }
   socket.on('data', function(data) {
     var result = data.result;
     var id = data.result.id;
+    // Convert timestamp to ISO 8601 and parse.
+    var time = Date.parse(result.time.replace(' ', 'T'));
+    // Make new elements for new variables.
     if (! (id in elements)) {
       Object.defineProperty(elements, id, {value: result, enumerable: true});
-      elements[id].times = [];
-      elements[id].values = [];
+      elements[id].data = [];
       var ul = document.getElementById('data');
       var li = document.createElement('li');
       li.id = id;
       ul.appendChild(li);
     }
-    // Convert timestamp to ISO 8601 and parse.
-    var time = Date.parse(result.time.replace(' ', 'T'));
-    elements[id].times.push(time);
-    elements[id].values.push(result.value);
+    // Update table.
     var text = id;
     text += ' ' + result.value;
     text += ' ' + result.time;
     document.getElementById(id).textContent = text;
-    // Remove old data to bound memory use.
-    if (elements[id].times.length > maxpoints) {
-      elements[id].times.shift();
-      elements[id].values.shift();
+    // Update saved time series.
+    elements[id].data.push({x: time, y: result.value});
+    if (elements[id].data.length > maxpoints) {
+      elements[id].data.shift();
     }
+    // Update graph.
+    if (id == 'hps_1_tc' && elements[id].data.length > 2) {
+      make_graph();
+    }
+    graph && graph.render();
   });
 }
 addEventListener('load', start);
 </script>
+
 </head>
 <body>
 <h1>ISEE-3 Telemetry</h1>
