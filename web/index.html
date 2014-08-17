@@ -3,24 +3,9 @@
 <head>
 <meta charset=utf-8>
 <title>ISEE-3 Reboot!</title>
-<link rel=stylesheet type=text/css href=envision.min.css>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 function start() {
-  // Initialize plot;
-  var series = [];
-  var plot;
-  function initialize_plot() {
-    new envision.templates.TimeSeries({
-      container: document.getElementById('plot'),
-      data: {
-        detail: series,
-        summary: series
-      }
-    });
-  }
-
-
   // Log data as it comes in.
   var elements = {};
   var socket = io();
@@ -38,13 +23,6 @@ function start() {
       Object.defineProperty(elements, id, {value: result, enumerable: true});
       elements[id].times = [];
       elements[id].values = [];
-      // Add some elements to the plot as they come in.
-      if (graph_elements.indexOf(id) != -1) {
-        series.push([elements[id].times, elements[id].values]);
-        if (!plot) {
-          plot = initialize_plot();
-        }
-      }
       var ul = document.getElementById('data');
       var li = document.createElement('li');
       li.id = id;
@@ -63,9 +41,6 @@ function start() {
       elements[id].times.shift();
       elements[id].values.shift();
     }
-    if (plot) {
-      plot.render();
-    }
   });
 }
 addEventListener('load', start);
@@ -73,9 +48,7 @@ addEventListener('load', start);
 </head>
 <body>
 <h1>ISEE-3 Telemetry</h1>
-  <div id=plot>
-    <script src=envision.min.js></script>
-  </div>
+  <div id=plot></div>
   <ul id=data></ul>
   <div id=footer>
     <p>Source available on <a href="https://github.com/rillian/isee3-telemetry/tree/dev">github</a>.</p>
