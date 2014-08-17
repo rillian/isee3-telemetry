@@ -26,15 +26,15 @@ app.get('/', function(req, res) {
   res.sendfile('index.html');
 });
 
-io.on('connection', function(socket){
-  console.log('socket.io connect', socket.handshake.address);
-  socket.on('disconnect', function(){
-    console.log('socket.io disconnect');
-  });
-});
-
 // Repeat available data.
-var net = require('net');
+var telemetry_status = {
+  msg: 'no data',
+  last: null,
+  update: function(msg) {
+    this.msg = msg;
+    this.last = new Date();
+  }
+};
 var query = {
   list: {
     action: 'list',
@@ -59,9 +59,18 @@ var query = {
   },
 }
 
+io.on('connection', function(socket){
+  console.log('socket.io connect', socket.handshake.address);
+  io.emit('status', telemetry_status);
+  socket.on('disconnect', function(){
+    console.log('socket.io disconnect');
+  });
+});
+
+var net = require('net');
 var client = net.connect({port: 21012}, function() {
   // On connect.
-  console.log('client connected');
+  console.log('telemetry connected');
   client.write(JSON.stringify(query.register) + '\n');
 });
 client.on('data', function(data) {
@@ -72,13 +81,17 @@ client.on('data', function(data) {
     data.toString().split('\n').forEach(function(stanza) {
       stanza.length && io.emit('data', JSON.parse(stanza));
     });
+    // Keep track of how recently we've see telemetry.
+    telemetry_status.update('data');
   }
   catch (e) {
     console.log('Failed to forward json from server:\n', data.toString(), e);
   }
 });
 client.on('end', function() {
-  console.log('client disconnected');
+  console.log('telemetry disconnected');
+  telemetry_status.update('no data');
+  io.emit('status', telemetry_status);
 });
 
 

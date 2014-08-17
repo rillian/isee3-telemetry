@@ -9,6 +9,7 @@
 function start() {
   // Log data as it comes in.
   var elements = {};
+  var last_update = null;
   var socket = io();
   socket.on('data', function(data) {
     var result = data.result;
@@ -29,14 +30,33 @@ function start() {
     text += ' ' + result.value;
     text += ' ' + result.time;
     document.getElementById(id).textContent = text;
+    last_update = new Date();
   });
+  socket.on('status', function(telemetry_status) {
+    var div = document.getElementById('status');
+    div.textContent = telemetry_status.msg;
+    last_update = telemetry_status.last;
+  });
+  setInterval(function() {
+    var div = document.getElementById('status');
+    var now = new Date();
+    if (last_update && now - last_update > 5000) {
+      div.textContent = 'no data for ' + (now - last_update) + ' ms';
+    } else {
+      div.textContent = 'data';
+    }
+
+  }, 5000);
 }
 addEventListener('load', start);
 </script>
 
 </head>
 <body>
-<h1>ISEE-3 Telemetry</h1>
+  <div id=header>
+    <h1>ISEE-3 Telemetry</h1>
+    <div id=status>no data</div>
+  </div>
   <ul id=data></ul>
   <div id=footer>
     <p>Source available on <a href="https://github.com/rillian/isee3-telemetry/tree/dev">github</a>.</p>
