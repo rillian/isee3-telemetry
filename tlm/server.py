@@ -310,7 +310,7 @@ class Server():
 						self.log("%s: Unregistered: %s" % (client_address, ", ".join([x.get_element().id() for x in untracked_elements])))
 					elif action == "list":
 						successful_elements += self.element_state_manager.element_state_map.keys()
-						self.log("%s: Listing: %s" % (client_address, ", ".join(successful_elements)))
+						self.log("%s: Listing requested" % str(client_address))
 					else:
 						response['error'] = "Action unrecognised: '%s'" % (msg['action'])
 						self.log("%s: Invalid action: %s" % (client_address, msg['action']))
