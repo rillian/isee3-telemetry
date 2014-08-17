@@ -51,6 +51,8 @@ var query = {
     data: [
       'hps_1_tc',
       'hps_2_tc',
+      'hps_1_temp_supercom',
+      'hps_2_temp_supercom',
       'accelerometer',
       'spin_rate',
       'spin_angle',

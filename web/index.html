@@ -20,9 +20,17 @@ function start() {
     });
   }
 
+
   // Log data as it comes in.
   var elements = {};
   var socket = io();
+  var graph_elements = [
+    'hps_1_tc',
+    'hps_2_tc',
+    'hps_1_temp_supercom',
+    'hps_2_temp_supercom',
+  ];
+  var maxpoints = 100;
   socket.on('data', function(data) {
     var result = data.result;
     var id = data.result.id;
@@ -30,9 +38,12 @@ function start() {
       Object.defineProperty(elements, id, {value: result, enumerable: true});
       elements[id].times = [];
       elements[id].values = [];
-      if (id == 'sa_current') {
+      // Add some elements to the plot as they come in.
+      if (graph_elements.indexOf(id) != -1) {
         series.push([elements[id].times, elements[id].values]);
-        plot = initialize_plot();
+        if (!plot) {
+          plot = initialize_plot();
+        }
       }
       var ul = document.getElementById('data');
       var li = document.createElement('li');
@@ -47,6 +58,11 @@ function start() {
     text += ' ' + result.value;
     text += ' ' + result.time;
     document.getElementById(id).textContent = text;
+    // Remove old data to bound memory use.
+    if (elements[id].times.length > maxpoints) {
+      elements[id].times.shift();
+      elements[id].values.shift();
+    }
     if (plot) {
       plot.render();
     }
@@ -57,8 +73,9 @@ addEventListener('load', start);
 </head>
 <body>
 <h1>ISEE-3 Telemetry</h1>
-  <div id=plot></div>
-  <script src=envision.min.js></script>
+  <div id=plot>
+    <script src=envision.min.js></script>
+  </div>
   <ul id=data></ul>
   <div id=footer>
     <p>Source available on <a href="https://github.com/rillian/isee3-telemetry/tree/dev">github</a>.</p>
