@@ -6,6 +6,20 @@
 
 import sys
 
+class Frame:
+  def __init__(self, timestamp, buffer, station='unknown'):
+    self.valid = False
+    self.timestamp = timestamp
+    self.buffer = buffer
+    self.station = station
+    frame_number = buffer[60]
+    if (frame_number & 3 == 0):
+      self.sclk = buffer[61] << 16 | buffer[62] << 8 | buffer[63]
+      self.valid = True
+  def __str__(self):
+    data = map(str, [self.timestamp, self.sclk, self.station])
+    return '\t'.join(data)
+
 for line in sys.stdin.readlines():
   words = line.split()
   if len(words) == 0:
@@ -21,7 +35,6 @@ for line in sys.stdin.readlines():
     for byte in words:
       buffer.append(int(byte, 16))
   if len(buffer) >= 128:
-    frame_number = buffer[60]
-    if (frame_number & 3 == 0):
-      sclk = buffer[61] << 16 | buffer[62] << 8 | buffer[63]
-      print('\t'.join(map(str, [timestamp, sclk, frame_number, station])))
+    frame = Frame(timestamp, buffer, station)
+    if frame.valid:
+      print(str(frame))
