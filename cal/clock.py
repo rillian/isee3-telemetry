@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# Copyright 2014 Ralph Giles. GPLv3 or later.
+
 # Quick parser for spacecraft clock calibration
 
 import sys
