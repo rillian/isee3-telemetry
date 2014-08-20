@@ -24,4 +24,4 @@ for line in sys.stdin.readlines():
     frame_number = buffer[60]
     if (frame_number & 3 == 0):
       sclk = buffer[61] << 16 | buffer[62] << 8 | buffer[63]
-    print('\t'.join(map(str, [timestamp, sclk, frame_number, station])))
+      print('\t'.join(map(str, [timestamp, sclk, frame_number, station])))
